@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.leftso.mapper.UserMapper">
+	<!-- 创建一个数据库user表与java中user对象关联的返回映射map -->
+	<resultMap type="com.leftso.pojo.User" id="UserMap">
+		<id column="id" property="id" jdbcType="NUMERIC" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="age" property="age" jdbcType="NUMERIC" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 新增 -->
+	<insert id="add" parameterType="com.leftso.pojo.User"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_user
+		<trim prefix="(" suffix=")" suffixOverrides=","><!-- 说明:使用trim的方式组合sql,属性suffixOverrides表示去除末端多余的该属性值（这里是,） -->
+			user_name,
+			age,
+			sex
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{name,jdbcType=VARCHAR},
+			#{age,jdbcType=NUMERIC},<!-- 说明:数字类型都是NUMERIC,没有INT,LONG类型;其他对应类型请参照mybaties官方文档 -->
+			#{sex,jdbcType=VARCHAR}
+		</trim>
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="remove" parameterType="java.lang.Long">
+		delete from t_user where
+		id=#{id}
+	</delete>
+
+	<!-- 修改属性 -->
+	<update id="update" parameterType="com.leftso.pojo.User">
+		update t_user
+		<set>
+			<trim suffixOverrides=",">
+				<if test="null!=name and ''!=name">
+					user_name=#{name,jdbcType=VARCHAR},
+				</if>
+				<if test="null!=age">
+					age=#{age,jdbcType=NUMERIC},
+				</if>
+				<if test="null!=sex and ''!= sex">
+					sex=#{sex,jdbcType=VARCHAR},
+				</if>
+			</trim>
+		</set>
+		where id=#{id,jdbcType=NUMERIC}
+	</update>
+
+	<!-- 查询一个 -->
+	<select id="findOne" parameterType="java.lang.Long" resultMap="UserMap">
+		select * from t_user where id=#{id}
+	</select>
+	<!-- 查询多个 -->
+	<select id="findList" parameterType="java.util.Map" resultMap="UserMap">
+		select * from t_user where 1=1
+		<if test="null!=name and '' != name">
+			and user_name like '%${name}%' 
+		</if>
+		<if test=" sex != null and '' != sex">
+			and sex = #{sex}
+		</if>
+		<if test="age > 0">
+			and age <![CDATA[ >=]]>#{age} <!-- 说明:在xml里面大于小于大于等于需要逆转 -->
+		</if>
+	</select>
+
+</mapper>

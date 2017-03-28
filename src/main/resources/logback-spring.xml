@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<!-- 打印sql -->
+	<logger name="com.leftso.mapper" level="DEBUG" />
+</configuration>
